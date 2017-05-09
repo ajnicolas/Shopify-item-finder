@@ -47,7 +47,6 @@ def findamatch():
             for item in matching:
                 print crayons.green(item)
 
-            print '--'*38
             t += 1
 
 findamatch()
