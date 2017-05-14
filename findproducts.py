@@ -6,7 +6,7 @@ import requests,crayons
 from bs4 import BeautifulSoup
 
 #Change url to whatever site you want to scrape(shopify)
-url = ['https://www.oneness287.com/','https://cncpts.com/']
+url = ['https://www.oneness287.com','https://cncpts.com/']
 
 #input or change keywords you want to search for
 keywords = [
@@ -15,9 +15,14 @@ keywords = [
 'boost',
 ]
 
+'''
+Change FastMode to True if you only want links and not the stock of the links
+Change FastMode to False if you want the sum of the stock of each link but its sorta slow
+'''
+FastMode = False
+
 headers ={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_2) AppleWebKit/537.36'
         '(KHTML, like Gecko) Chrome/56.0.2924.28 Safari/537.36'}
-
 
 def findamatch():
     #Goes through every url
@@ -40,30 +45,45 @@ def findamatch():
         i += 1
 
         #While loop to get all the matching keyword links
-        t = 0
-        orig = len(keywords)
-        while t < orig:
+        if FastMode == True:
 
-            matching = [s for s in links if keywords[t] in s]
-            print 'FOUND',len(matching), 'LINKS', 'FOR:', crayons.blue(keywords[t].upper())
+            t = 0
+            orig = len(keywords)
+            while t < orig:
 
-            x = 0
-            Mt = len(matching)
-            while x < Mt:
-                fix = matching[x] + '.xml'
-                r = requests.get(fix,headers=headers)
-                soup = BeautifulSoup(r.content, 'html.parser')
+                matching = [s for s in links if keywords[t] in s]
+                print 'FOUND',len(matching), 'LINKS', 'FOR:', keywords[t].upper()
+                for item in matching:
+                    print crayons.green(item)
 
-                #parses for inventory of each link and prints everything out here 
-                stk = []
-                for stock in soup.findAll("inventory-quantity"):
-                    stk.append(int(stock.text))
-                print crayons.cyan(matching[x])
-                print crayons.green(sum(stk)), 'Total stock'
-                print ''
+                t += 1
+                
+        #if fastmode is false and user wants the sum of the stock of each link
+        else:
+            t = 0
+            orig = len(keywords)
+            while t < orig:
 
-                x += 1
+                matching = [s for s in links if keywords[t] in s]
+                print 'FOUND',len(matching), 'LINKS', 'FOR:', crayons.blue(keywords[t].upper())
+                
+                x = 0
+                Mt = len(matching)
+                while x < Mt:
+                    fix = matching[x] + '.xml'
+                    r = requests.get(fix,headers=headers)
+                    soup = BeautifulSoup(r.content, 'html.parser')
 
-            t += 1
+                    #parses for inventory of each link and prints everything out here 
+                    stk = []
+                    for stock in soup.findAll("inventory-quantity"):
+                        stk.append(int(stock.text))
+                    print crayons.cyan(matching[x])
+                    print crayons.green(sum(stk)), 'Total stock'
+                    print ''
+
+                    x += 1
+
+                t += 1
     
 findamatch()
