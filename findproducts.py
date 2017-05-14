@@ -54,7 +54,7 @@ def findamatch():
                 matching = [s for s in links if keywords[t] in s]
                 print 'FOUND',len(matching), 'LINKS', 'FOR:', keywords[t].upper()
                 for item in matching:
-                    print crayons.green(item)
+                    print crayons.cyan(item)
 
                 t += 1
                 
